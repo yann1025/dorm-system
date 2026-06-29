@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>宿舍管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{background:#f4f6fa}
+        .sidebar{height:100vh;background:#fff;border-right:1px solid #eee;padding-top:10px}
+        .sidebar a{display:block;padding:10px 20px;color:#333;text-decoration:none;border-radius:6px;margin:4px 10px}
+        .sidebar a.active,.sidebar a:hover{background:#0d6efd;color:#fff}
+        .header{background:#0d6efd;color:#fff;padding:12px 20px;font-size:20px;font-weight:bold}
+        .card-stat{border:none;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+        .page{display:none}.page.active{display:block}
+    </style>
+</head>
+<body>
+<div class="header">🏠 宿舍管理系统</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 sidebar">
+            <a href="#" class="menu active" data-page="dash">📊 仪表盘</a>
+            <a href="#" class="menu" data-page="building">🏢 楼栋管理</a>
+            <a href="#" class="menu" data-page="room">🚪 房间管理</a>
+            <a href="#" class="menu" data-page="student">🎓 学生管理</a>
+            <a href="#" class="menu" data-page="checkin">🛏 入住/调宿/退宿</a>
+            <a href="#" class="menu" data-page="hygiene">🧹 卫生检查</a>
+            <a href="#" class="menu" data-page="violation">⚠️ 违纪登记</a>
+            <a href="#" class="menu" data-page="search">🔍 综合检索</a>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <div id="dash" class="page active">
+                <h4>📊 系统总览</h4>
+                <div class="row mt-3" id="statCards"></div>
+            </div>
+
+            <div id="building" class="page">
+                <h4>🏢 楼栋管理</h4>
+                <div class="row g-2 my-3">
+                    <div class="col"><input id="bName" class="form-control" placeholder="楼栋名"></div>
+                    <div class="col"><input id="bFloors" type="number" class="form-control" placeholder="楼层"></div>
+                    <div class="col"><input id="bManager" class="form-control" placeholder="管理员"></div>
+                    <div class="col-auto"><button class="btn btn-primary" onclick="addBuilding()">+ 添加</button></div>
+                </div>
+                <table class="table table-hover bg-white">
+                    <thead><tr><th>ID</th><th>楼栋名</th><th>楼层</th><th>管理员</th><th>操作</th></tr></thead>
+                    <tbody id="bTbody"></tbody>
+                </table>
+            </div>
+
+            <div id="room" class="page">
+                <h4>🚪 房间管理</h4>
+                <div class="row g-2 my-3">
+                    <div class="col"><select id="rBuilding" class="form-select"></select></div>
+                    <div class="col"><input id="rNo" class="form-control" placeholder="房间号"></div>
+                    <div class="col"><input id="rCap" type="number" class="form-control" placeholder="床位数" value="4"></div>
+                    <div class="col"><input id="rRemark" class="form-control" placeholder="备注"></div>
+                    <div class="col-auto"><button class="btn btn-primary" onclick="addRoom()">+ 添加</button></div>
+                </div>
+                <table class="table table-hover bg-white">
+                    <thead><tr><th>ID</th><th>楼栋</th><th>房间号</th><th>床位</th><th>已住</th><th>备注</th><th>操作</th></tr></thead>
+                    <tbody id="rTbody"></tbody>
+                </table>
+            </div>
+
+            <div id="student" class="page">
+                <h4>🎓 学生管理</h4>
+                <div class="row g-2 my-3">
+                    <div class="col"><input id="sNo" class="form-control" placeholder="学号"></div>
+                    <div class="col"><input id="sName" class="form-control" placeholder="姓名"></div>
+                    <div class="col">
+                        <select id="sGender" class="form-select"><option>男</option><option>女</option></select>
+                    </div>
+                    <div class="col"><input id="sClass" class="form-control" placeholder="班级"></div>
+                    <div class="col"><input id="sPhone" class="form-control" placeholder="电话"></div>
+                    <div class="col-auto"><button class="btn btn-primary" onclick="addStudent()">+ 添加</button></div>
+                </div>
+                <table class="table table-hover bg-white">
+                    <thead><tr><th>ID</th><th>学号</th><th>姓名</th><th>性别</th><th>班级</th><th>电话</th><th>操作</th></tr></thead>
+                    <tbody id="sTbody"></tbody>
+                </table>
+            </div>
+
+            <div id="checkin" class="page">
+                <h4>🛏 入住 / 调宿 / 退宿</h4>
+                <div class="row g-2 my-3">
+                    <div class="col"><select id="cStudent" class="form-select"></select></div>
+                    <div class="col"><select id="cRoom" class="form-select"></select></div>
+                    <div class="col-auto"><button class="btn btn-primary" onclick="addCheckin()">登记入住</button></div>
+                </div>
+                <table class="table table-hover bg-white">
+                    <thead><tr><th>ID</th><th>学号</th><th>姓名</th><th>楼栋</th><th>房间</th><th>入住</th><th>退宿</th><th>状态</th><th>操作</th></tr></thead>
+                    <tbody id="cTbody"></tbody>
+                </table>
+            </div>
+
+            <div id="hygiene" class="page">
+                <h4>🧹 卫生检查</h4>
+                <div class="row g-2 my-3">
+                    <div class="col"><select id="hRoom" class="form-select"></select></div>
+                    <div class="col"><input id="hDate" type="date" class="form-control"></div>
+                    <div class="col"><input id="hScore" type="number" class="form-control" placeholder="分数(0-100)"></div>
+                    <div class="col"><input id="hChecker" class="form-control" placeholder="检查人"></div>
+                    <div class="col"><input id="hRemark" class="form-control" placeholder="备注"></div>
+                    <div class="col-auto"><button class="btn btn-primary" onclick="addHygiene()">+ 记录</button></div>
+                </div>
+                <table class="table table-hover bg-white">
+                    <thead><tr><th>ID</th><th>楼栋</th><th>房间</th><th>日期</th><th>分数</th><th>检查人</th><th>备注</th><th>操作</th></tr></thead>
+                    <tbody id="hTbody"></tbody>
+                </table>
+            </div>
+
+            <div id="violation" class="page">
+                <h4>⚠️ 违纪登记</h4>
+                <div class="row g-2 my-3">
+                    <div class="col"><select id="vStudent" class="form-select"></select></div>
+                    <div class="col"><input id="vDate" type="date" class="form-control"></div>
+                    <div class="col"><input id="vType" class="form-control" placeholder="类型(如:晚归)"></div>
+                    <div class="col"><input id="vDesc" class="form-control" placeholder="说明"></div>
+                    <div class="col"><input id="vPun" class="form-control" placeholder="处理结果"></div>
+                    <div class="col-auto"><button class="btn btn-primary" onclick="addViolation()">+ 登记</button></div>
+                </div>
+                <table class="table table-hover bg-white">
+                    <thead><tr><th>ID</th><th>学号</th><th>姓名</th><th>日期</th><th>类型</th><th>说明</th><th>处理</th><th>操作</th></tr></thead>
+                    <tbody id="vTbody"></tbody>
+                </table>
+            </div>
+
+            <div id="search" class="page">
+                <h4>🔍 综合检索（按学生姓名/学号）</h4>
+                <div class="input-group my-3">
+                    <input id="kw" class="form-control" placeholder="输入姓名或学号">
+                    <button class="btn btn-primary" onclick="doSearch()">搜索</button>
+                </div>
+                <table class="table bg-white">
+                    <thead><tr><th>学号</th><th>姓名</th><th>班级</th><th>入住房间</th></tr></thead>
+                    <tbody id="searchTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function api(url, method='GET', body){
+        const opt = {method, headers:{'Content-Type':'application/json'}};
+        if(body) opt.body = JSON.stringify(body);
+        const res = await fetch(url, opt);
+        const j = await res.json();
+        if(j.code!==200){ alert(j.msg||'请求失败'); throw new Error(j.msg); }
+        return j.data;
+    }
+
+    document.querySelectorAll('.menu').forEach(a=>{
+        a.onclick = e=>{
+            e.preventDefault();
+            document.querySelectorAll('.menu').forEach(m=>m.classList.remove('active'));
+            a.classList.add('active');
+            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+            document.getElementById(a.dataset.page).classList.add('active');
+            if(a.dataset.page==='dash')      loadStats();
+            if(a.dataset.page==='building')  loadBuildings();
+            if(a.dataset.page==='room')      { loadBuildingSelect(); loadRooms(); }
+            if(a.dataset.page==='student')   loadStudents();
+            if(a.dataset.page==='checkin')   { loadStudentSelect(); loadRoomSelect(); loadCheckins(); }
+            if(a.dataset.page==='hygiene')   { loadRoomSelect2(); loadHygienes(); }
+            if(a.dataset.page==='violation') { loadStudentSelect2(); loadViolations(); }
+        };
+    });
+
+    async function loadStats(){
+        const d = await api('/api/stats');
+        const cards = [
+            ['楼栋数', d.buildingCount, '🏢'],
+            ['房间数', d.roomCount, '🚪'],
+            ['学生数', d.studentCount, '🎓'],
+            ['在住人数', d.bedUsed, '🛏'],
+            ['总床位', d.bedTotal, '🛌'],
+            ['违纪记录', d.violationCount, '⚠️']
+        ];
+        document.getElementById('statCards').innerHTML = cards.map(c=>`
+    <div class="col-md-3 mb-3">
+      <div class="card card-stat p-3">
+        <div class="text-muted">${c[0]}</div>
+        <div class="d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">${c[1]}</h3><span style="font-size:28px">${c[2]}</span>
+        </div>
+      </div>
+    </div>`).join('');
+    }
+
+    async function loadBuildings(){
+        const data = await api('/api/buildings');
+        document.getElementById('bTbody').innerHTML = data.map(b=>`
+    <tr>
+      <td>${b.buildingId}</td><td>${b.buildingName}</td><td>${b.floors}</td><td>${b.manager||''}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="delBuilding(${b.buildingId})">删除</button></td>
+    </tr>`).join('');
+    }
+    async function addBuilding(){
+        const b = {buildingName:bName.value, floors:+bFloors.value||1, manager:bManager.value};
+        if(!b.buildingName) return alert('请输入楼栋名');
+        await api('/api/buildings','POST',b);
+        bName.value=bFloors.value=bManager.value=''; loadBuildings();
+    }
+    async function delBuilding(id){ if(confirm('确定删除?')){ await api('/api/buildings/'+id,'DELETE'); loadBuildings(); } }
+
+    async function loadBuildingSelect(){
+        const data = await api('/api/buildings');
+        rBuilding.innerHTML = data.map(b=>`<option value="${b.buildingId}">${b.buildingName}</option>`).join('');
+    }
+    async function loadRooms(){
+        const data = await api('/api/rooms');
+        document.getElementById('rTbody').innerHTML = data.map(r=>`
+    <tr>
+      <td>${r.roomId}</td><td>${r.buildingName||''}</td><td>${r.roomNo}</td>
+      <td>${r.capacity}</td><td>${r.used||0}</td><td>${r.remark||''}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="delRoom(${r.roomId})">删除</button></td>
+    </tr>`).join('');
+    }
+    async function addRoom(){
+        const r = {buildingId:+rBuilding.value, roomNo:rNo.value, capacity:+rCap.value||4, remark:rRemark.value};
+        if(!r.roomNo) return alert('请输入房间号');
+        await api('/api/rooms','POST',r);
+        rNo.value=rRemark.value=''; loadRooms();
+    }
+    async function delRoom(id){ if(confirm('确定删除?')){ await api('/api/rooms/'+id,'DELETE'); loadRooms(); } }
+
+    async function loadStudents(){
+        const data = await api('/api/students');
+        document.getElementById('sTbody').innerHTML = data.map(s=>`
+    <tr>
+      <td>${s.studentId}</td><td>${s.studentNo}</td><td>${s.studentName}</td>
+      <td>${s.gender||''}</td><td>${s.className||''}</td><td>${s.phone||''}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="delStudent(${s.studentId})">删除</button></td>
+    </tr>`).join('');
+    }
+    async function addStudent(){
+        const s = {studentNo:sNo.value, studentName:sName.value, gender:sGender.value, className:sClass.value, phone:sPhone.value};
+        if(!s.studentNo||!s.studentName) return alert('学号和姓名必填');
+        await api('/api/students','POST',s);
+        sNo.value=sName.value=sClass.value=sPhone.value=''; loadStudents();
+    }
+    async function delStudent(id){ if(confirm('确定删除?')){ await api('/api/students/'+id,'DELETE'); loadStudents(); } }
+
+    async function loadStudentSelect(){
+        const data = await api('/api/students');
+        cStudent.innerHTML = data.map(s=>`<option value="${s.studentId}">${s.studentNo} - ${s.studentName}</option>`).join('');
+    }
+    async function loadRoomSelect(){
+        const data = await api('/api/rooms');
+        cRoom.innerHTML = data.map(r=>`<option value="${r.roomId}">${r.buildingName} ${r.roomNo} (${r.used||0}/${r.capacity})</option>`).join('');
+    }
+    async function loadCheckins(){
+        const data = await api('/api/checkins');
+        document.getElementById('cTbody').innerHTML = data.map(c=>`
+    <tr>
+      <td>${c.checkinId}</td><td>${c.studentNo||''}</td><td>${c.studentName||''}</td>
+      <td>${c.buildingName||''}</td><td>${c.roomNo||''}</td>
+      <td>${c.checkinAt||''}</td><td>${c.checkoutAt||''}</td>
+      <td><span class="badge bg-${c.status==='IN'?'success':'secondary'}">${c.status==='IN'?'在住':'已退'}</span></td>
+      <td>
+        ${c.status==='IN'?`
+          <button class="btn btn-sm btn-warning" onclick="transferCheckin(${c.checkinId})">调宿</button>
+          <button class="btn btn-sm btn-secondary" onclick="checkoutCheckin(${c.checkinId})">退宿</button>`:''}
+      </td>
+    </tr>`).join('');
+    }
+    async function addCheckin(){
+        await api('/api/checkins','POST',{studentId:+cStudent.value, roomId:+cRoom.value});
+        loadCheckins(); loadRoomSelect();
+    }
+    async function transferCheckin(id){
+        const rid = prompt('请输入新房间ID（在房间管理页查看）');
+        if(!rid) return;
+        await api('/api/checkins/transfer','PUT',{checkinId:id, roomId:+rid});
+        loadCheckins();
+    }
+    async function checkoutCheckin(id){
+        if(confirm('确认退宿?')){ await api('/api/checkins/checkout','PUT',{checkinId:id}); loadCheckins(); }
+    }
+
+    async function loadRoomSelect2(){
+        const data = await api('/api/rooms');
+        hRoom.innerHTML = data.map(r=>`<option value="${r.roomId}">${r.buildingName} ${r.roomNo}</option>`).join('');
+    }
+    async function loadHygienes(){
+        const data = await api('/api/hygienes');
+        document.getElementById('hTbody').innerHTML = data.map(h=>`
+    <tr>
+      <td>${h.checkId}</td><td>${h.buildingName||''}</td><td>${h.roomNo||''}</td>
+      <td>${h.checkDate}</td><td>${h.score}</td><td>${h.checker||''}</td><td>${h.remark||''}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="delHygiene(${h.checkId})">删除</button></td>
+    </tr>`).join('');
+    }
+    async function addHygiene(){
+        const h = {roomId:+hRoom.value, checkDate:hDate.value, score:+hScore.value, checker:hChecker.value, remark:hRemark.value};
+        if(!h.checkDate) return alert('请填写日期');
+        await api('/api/hygienes','POST',h);
+        hDate.value=hScore.value=hChecker.value=hRemark.value=''; loadHygienes();
+    }
+    async function delHygiene(id){ if(confirm('确定删除?')){ await api('/api/hygienes/'+id,'DELETE'); loadHygienes(); } }
+
+    async function loadStudentSelect2(){
+        const data = await api('/api/students');
+        vStudent.innerHTML = data.map(s=>`<option value="${s.studentId}">${s.studentNo} - ${s.studentName}</option>`).join('');
+    }
+    async function loadViolations(){
+        const data = await api('/api/violations');
+        document.getElementById('vTbody').innerHTML = data.map(v=>`
+    <tr>
+      <td>${v.violationId}</td><td>${v.studentNo||''}</td><td>${v.studentName||''}</td>
+      <td>${v.violationDate}</td><td>${v.violationType||''}</td>
+      <td>${v.description||''}</td><td>${v.punishment||''}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="delViolation(${v.violationId})">删除</button></td>
+    </tr>`).join('');
+    }
+    async function addViolation(){
+        const v = {studentId:+vStudent.value, violationDate:vDate.value, violationType:vType.value, description:vDesc.value, punishment:vPun.value};
+        if(!v.violationDate) return alert('请选择日期');
+        await api('/api/violations','POST',v);
+        vDate.value=vType.value=vDesc.value=vPun.value=''; loadViolations();
+    }
+    async function delViolation(id){ if(confirm('确定删除?')){ await api('/api/violations/'+id,'DELETE'); loadViolations(); } }
+
+    async function doSearch(){
+        const data = await api('/api/students?kw=' + encodeURIComponent(kw.value));
+        const checkins = await api('/api/checkins');
+        const map = {};
+        checkins.filter(c=>c.status==='IN').forEach(c=>{ map[c.studentId] = (c.buildingName||'') + ' ' + (c.roomNo||''); });
+        document.getElementById('searchTbody').innerHTML = data.map(s=>`
+    <tr><td>${s.studentNo}</td><td>${s.studentName}</td><td>${s.className||''}</td><td>${map[s.studentId]||'未入住'}</td></tr>
+  `).join('');
+    }
+
+    loadStats();
+</script>
+</body>
+</html>
