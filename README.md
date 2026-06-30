@@ -141,7 +141,7 @@ mvnw spring-boot:run
 
 ## 👤 作者
 
-**胡朝研**
+**糊糊**
 
 - 🌐 个人主页: [httphuzhaoyan.org](https://httphuzhaoyan.org)
 - 💻 GitHub: [@yann1025](https://github.com/yann1025)
