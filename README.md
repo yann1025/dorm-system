@@ -121,8 +121,15 @@ mvnw spring-boot:run
 | `/api/stats` | 数据统计 |
 
 ## 📸 项目截图
+<img width="1647" height="887" alt="image" src="https://github.com/user-attachments/assets/f19859c4-8c87-4ff4-a25b-c8ad9b9d0f01" />
+<img width="1647" height="906" alt="image" src="https://github.com/user-attachments/assets/c1eb8a2f-d836-495d-86d8-d7b9c4b77192" />
+<img width="1650" height="888" alt="image" src="https://github.com/user-attachments/assets/15d71e24-9f5c-40db-891d-cffbd182f597" />
+<img width="1640" height="867" alt="image" src="https://github.com/user-attachments/assets/d95823a0-1330-4a15-baf6-d73583d7a9bb" />
+<img width="1648" height="867" alt="image" src="https://github.com/user-attachments/assets/8dd59ee0-e3d4-4a98-98f8-2a45f2b82fa6" />
+<img width="1633" height="882" alt="image" src="https://github.com/user-attachments/assets/97c7d375-759e-4619-b7f7-3993f938cd9c" />
+<img width="1649" height="902" alt="image" src="https://github.com/user-attachments/assets/117ac390-baed-4464-a9f1-74d2e69446e6" />
+<img width="1636" height="875" alt="image" src="https://github.com/user-attachments/assets/2b5c2f64-625e-4764-9e7b-d949910d31dc" />
 
-> 后续可补充系统界面截图
 
 ## 🎯 项目亮点
 
